@@ -27,6 +27,9 @@ import numpy as np
 
 model = load_model('Test_model.h5') # load the model
 
+def clear():
+    canvas.delete("all")
+
 def paint(event): # coordiunates of cursor and draw from point
     x1, y1 = (event.x-1), (event.y-1)
     x2, y2 = (event.x+1), (event.y+1)
@@ -37,16 +40,20 @@ def handwriting_digits(): # saves the image of the shape
     canvas.postscript(file="digit.eps", colormode='color')
     print("digit saved!!")
     process_and_predict()
+
 def process_and_predict(): # processes the image and puts it through the model
     image = Image.open("digit.eps")
     image = image.resize((28,28))
     image = image.convert('L')
     digit_array = np.array(image)
-    digit_array = digit_array.reshape(1,28,28)
-    prediction = model.predict(image)
+    digit_array = digit_array / 255.0
+    digit_array = digit_array.reshape(1,28,28,1)
+    prediction = model.predict(digit_array)
     prediction_digit = np.argmax(prediction)
+    print("Predicted digit: " + str(prediction_digit))
 
-    print(prediction_digit)
+    for i, prob, in enumerate(prediction.squeeze()):
+        print("Class" + str(i) + "Probability: " + str(prob))
 
 # gui stuff
 root = tk.Tk()
@@ -58,6 +65,10 @@ canvas.bind("<B1-Motion>", paint)
 
 recognize_button = tk.Button(root, text = "Recognize", command=handwriting_digits)
 recognize_button.pack(side=tk.RIGHT)
+
+clear_button = tk.Button(root, text="Clear", command=clear)
+clear_button.pack(side=tk.LEFT)
+
 
 mainloop()
 
