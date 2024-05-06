@@ -25,7 +25,7 @@ from PIL import Image, ImageDraw
 import numpy as np
 
 
-model = load_model('Test_model.h5') # load the model
+model = load_model('turbo_model_1.h5') # load the model
 
 def clear():
     canvas.delete("all")
